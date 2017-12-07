@@ -3,13 +3,6 @@ browser.browserAction.onClicked.addListener(tab => importTabs());
 
 // ------------- Vars -------------
 
-var VALID_PROTOCOLS = [
-  'http',
-  'https',
-  'file',
-  'about'
-];
-
 var NOTIFY_TITLE = 'Tabs Import Add-on';
 
 // ------------- Import -------------
@@ -49,16 +42,19 @@ function openTabsFromList(text) {
   if (/\r\n/.test(text)) delim = /\r\n/;
   var lines = text.split(delim);
   
-  lines.reduce((s, line) => {
-    return s.then(() => {
-      var url = line.trim();
-      if (url.length && validUrl(url)) {
-        return browser.tabs.create({url});
-      }
-    })
-    .catch(error => {
-      console.log('Error opening tabs:', error)
-      notifyMsg('tabs-open-tabs-error', NOTIFY_TITLE, 'Error opening tabs: ' + error);
-    });
-  }, Promise.resolve());
+  var totalImported = 0;
+  
+  Promise.all(lines.map(url => {
+    var url = url.trim();
+    if (url.length && validUrl(url)) {
+      totalImported++;
+      return browser.tabs.create({url});
+    }
+  }))
+  .then(() => {
+    console.log('Total imported:', totalImported);
+    if (!totalImported) {
+      notifyMsg('tabs-import-no-tabs', NOTIFY_TITLE, 'No tabs are imported');
+    }
+  });
 }
