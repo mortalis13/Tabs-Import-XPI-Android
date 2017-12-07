@@ -1,0 +1,27 @@
+{
+  "name": "Tabs Import",
+  "version": "1.0.1",
+  "description": "Imports URLs from a text file and opens them in the browser",
+
+  "manifest_version": 2,
+  "applications": {
+    "gecko": {
+      "id": "tabs-import@mortalis.org",
+      "strict_min_version": "54.0"
+    }
+  },
+  
+  "browser_action": {
+    "default_title": "Tabs Import"
+  },
+  
+  "background": {
+    "scripts": ["utils.js", "main-import.js"]
+  },
+
+  "permissions": [
+    "tabs",
+    "downloads",
+    "<all_urls>"
+  ]
+}
